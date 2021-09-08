@@ -100,6 +100,9 @@ module.exports = {
             }
             res.resBody = { message: error.message };
             return res.status(status).send({ message: error.message });
+        } else if (error instanceof mongoose.Error.ValidationError) {
+            res.resBody = { code: 400, message: 'Validation error.' };
+            return res.status(400).send({ code: 400, message: error.message });
         } else if (error instanceof mongoose.Error.CastError) {
             res.resBody = { code: 400, message: 'Input data schema mismatch.' };
             return res
