@@ -61,9 +61,13 @@ app.set('view engine', 'ejs');
 // enable trust proxy
 app.set('trust proxy', true);
 
-// Routes(API)
+app.use(express.static(path.join(__dirname, 'views')));
+app.use('/api', express.static(path.join(__dirname, 'views')));
 
-app.get(['/', '/api'], function (req, res) {
+// Routes(API)
+app.use(['/v1/api/auth', '/api/auth'], require('./src/api/user'));
+
+app.get(['/v1', '/v1/api'], function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(
         JSON.stringify({
@@ -75,7 +79,7 @@ app.get(['/', '/api'], function (req, res) {
 });
 
 app.use('/*', function (req, res) {
-    res.status(404).send({ message: 'route do not exist' });
+    res.status(404).render('notFound.ejs', {});
 });
 
 app.set('port', process.env.PORT || 3002);
