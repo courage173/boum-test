@@ -4,7 +4,7 @@ module.exports = {
             const userModel = new UserModel();
             userModel.name = data.name;
             userModel.email = data.email;
-            userModel.organisationName = data.organisationName;
+            userModel.username = data.username;
             userModel.password = data.password;
             userModel.jwtRefreshToken = data.jwtRefreshToken;
 
@@ -34,6 +34,7 @@ module.exports = {
         try {
             const _this = this;
             let user = await _this.findOneBy({ email: data.email });
+
             if (user) {
                 const error = new Error('User email is taken');
                 error.code = 400;
@@ -52,8 +53,8 @@ module.exports = {
             const authUserObj = {
                 id: user._id,
                 name: user.name,
+                username: user.username,
                 email: user.email,
-                organisationName: user.organisationName,
                 tokens: {
                     jwtAccessToken: `${jwt.sign(
                         {
@@ -74,7 +75,17 @@ module.exports = {
     loginUser: async function (data) {
         try {
             const _this = this;
-            const user = await _this.findOneBy({ email: data.email });
+            if (!data.email && !data.username) {
+                const error = new Error('email or username should be present');
+                error.code = 400;
+                ErrorService.log('userService.loginUser', error);
+                throw error;
+            }
+            let query = { email: data.email, deleted: false };
+            if (!data.email) {
+                query = { username: data.username, deleted: false };
+            }
+            const user = await _this.findOneBy(query);
             if (!user) {
                 const error = new Error('User not found');
                 error.code = 404;
@@ -95,7 +106,7 @@ module.exports = {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                organisationName: user.organisationName,
+                username: user.username,
                 tokens: {
                     jwtAccessToken: `${jwt.sign(
                         {

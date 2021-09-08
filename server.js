@@ -1,5 +1,10 @@
 const express = require('express');
 const app = express();
+const ChannelService = require('./src/services/channelService');
+const MessageService = require('./src/services/messageService');
+const UserService = require('./src/services/userService');
+const jwtSecretKey = process.env['JWT_SECRET'];
+const jwt = require('jsonwebtoken');
 
 const { NODE_ENV } = process.env;
 
@@ -66,6 +71,8 @@ app.use('/api', express.static(path.join(__dirname, 'views')));
 
 // Routes(API)
 app.use(['/v1/api/auth', '/api/auth'], require('./src/api/user'));
+app.use(['/v1/api/channel', '/api/channel'], require('./src/api/channel'));
+app.use(['/v1/api/message', '/api/message'], require('./src/api/message'));
 
 app.get(['/v1', '/v1/api'], function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -89,6 +96,69 @@ const server = http.listen(app.get('port'), function () {
 });
 
 module.exports = app;
+
+const io = require('socket.io')(server, {
+    allowEIO3: true,
+    cors: {
+        origin: true,
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
+
+io.use(async (socket, next) => {
+    try {
+        const token = socket.handshake.query.token;
+        const payload = await jwt.verify(token, jwtSecretKey);
+        socket.userId = payload.id;
+        next();
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('permission error', err);
+    }
+});
+
+global.io = io;
+
+io.on('connection', socket => {
+    //for a new user joining the room
+    socket.on('joinChannel', async ({ channelId }) => {
+        const user = await UserService.findOneBy({ _id: socket.userId });
+        await ChannelService.joinChannel(socket.userId, channelId);
+        socket.join(channelId);
+
+        socket.emit('notification', {
+            userId: user._id,
+            name: user.name,
+            username: user.username,
+            text: `Welcome ${user.username}`,
+        });
+
+        //displays a joined room message to all other room users except that particular user
+        socket.broadcast.to(channelId).emit('notification', {
+            userId: user._id,
+            name: user.name,
+            username: user.username,
+            text: `${user.username} has joined the chat`,
+        });
+    });
+    //user sending message
+    socket.on('message', async ({ channelId, message }) => {
+        if (message.trim().length > 0) {
+            const user = await UserService.findOneBy({ _id: socket.userId });
+            const message = await MessageService.create(
+                { message, channelId },
+                socket.userId
+            );
+            io.to(channelId).emit('newMessage', {
+                message,
+                name: user.name,
+                userId: socket.userId,
+            });
+        }
+    });
+});
+
 module.exports.close = function () {
     server.close();
 };
