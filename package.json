@@ -1,0 +1,51 @@
+{
+  "name": "boum-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "eslint": "./node_modules/.bin/eslint ",
+    "lint": "eslint '**/*.js' -c .eslintrc.json --ignore-path .eslintignore --fix",
+    "fix-lint": "eslint --fix '**/*.js'",
+    "start": "node server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "fix": "npm run fix-lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/courage173/boum-test.git"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "custom-env": "^2.0.1",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.4",
+    "nodemon": "^2.0.12",
+    "rand-token": "^1.0.1",
+    "winston": "^3.3.3",
+    "winston-slack-webhook-transport": "^2.0.1"
+},
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.3.2"
+},
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/courage173/boum-test/issues"
+  },
+  "homepage": "https://gitlab.com/courage173/boum-test#readme"
+}
