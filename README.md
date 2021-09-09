@@ -1,6 +1,6 @@
 # codebyte-test
 
-[![Build Status](https://travis-ci.org/courage173/boum-test.svg?branch=main)](https://travis-ci.org/courage173/codebyte-test)
+[![Build Status](https://travis-ci.org/courage173/boum-test.svg?branch=main)](https://travis-ci.org/courage173/boum-test)
 
 ## Running the project locally
 
@@ -12,3 +12,5 @@
 
 -   Run MongoDB manually on port 27017 .
 -   You can run `npm run test` command to run
+
+The api is hosted https://boum-test.herokuapp.com/v1/api
