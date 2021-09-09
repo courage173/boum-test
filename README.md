@@ -1,6 +1,6 @@
 # codebyte-test
 
-[![Build Status](https://travis-ci.org/courage173/boum-test.svg?branch=main)](https://travis-ci.org/courage173/codebyte-test)
+[![Build Status](https://travis-ci.org/courage173/boum-test.svg?branch=main)](https://travis-ci.org/courage173/boum-test)
 
 ## Running the project locally
 
