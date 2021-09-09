@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+    - 'stable'
+cache:
+    directories:
+        - 'node_modules'
+install:
+    - npm install
+services:
+    - mongodb
+
+env:
+    global:
+        - NODE_ENV=test
+
+script:
+    - docker build -t boum-test .
+    - npm ci
+    - npm run test
+notifications:
+    email: false
