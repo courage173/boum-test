@@ -48,7 +48,7 @@ module.exports = {
                 skip = 0;
             }
             if (!limit) {
-                limit = 10;
+                limit = 50;
             }
             if (!query.deleted) query.deleted = false;
 
@@ -123,6 +123,21 @@ module.exports = {
                 path: 'users.userId',
                 select: '_id name',
             });
+            return channel;
+        } catch (error) {
+            ErrorService.log('chanelService.findBy', error);
+            throw error;
+        }
+    },
+    getChannelById: async function (query) {
+        try {
+            const channel = await this.findOneBy(query);
+            if (!channel) {
+                const error = new Error('Channel does not exist!');
+                error.code = 404;
+                ErrorService.log('chanelService.loginUser', error);
+                throw error;
+            }
             return channel;
         } catch (error) {
             ErrorService.log('chanelService.findBy', error);
