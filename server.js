@@ -1,10 +1,5 @@
 const express = require('express');
 const app = express();
-const ChannelService = require('./src/services/channelService');
-const MessageService = require('./src/services/messageService');
-const UserService = require('./src/services/userService');
-const jwtSecretKey = process.env['JWT_SECRET'];
-const jwt = require('jsonwebtoken');
 
 const { NODE_ENV } = process.env;
 
@@ -95,8 +90,6 @@ const server = http.listen(app.get('port'), function () {
     console.log('Server Started on port ' + app.get('port'));
 });
 
-module.exports = app;
-
 const io = require('socket.io')(server, {
     allowEIO3: true,
     cors: {
@@ -106,9 +99,16 @@ const io = require('socket.io')(server, {
     },
 });
 
+const ChannelService = require('./src/services/channelService');
+const MessageService = require('./src/services/messageService');
+const UserService = require('./src/services/userService');
+const jwtSecretKey = process.env['JWT_SECRET'];
+const jwt = require('jsonwebtoken');
+
 io.use(async (socket, next) => {
     try {
         const token = socket.handshake.query.token;
+
         const payload = await jwt.verify(token, jwtSecretKey);
         socket.userId = payload.id;
         next();
@@ -127,7 +127,7 @@ io.on('connection', socket => {
         await ChannelService.joinChannel(socket.userId, channelId);
         socket.join(channelId);
 
-        socket.emit('notification', {
+        socket.emit('welcome_notification', {
             userId: user._id,
             name: user.name,
             username: user.username,
@@ -146,12 +146,12 @@ io.on('connection', socket => {
     socket.on('message', async ({ channelId, message }) => {
         if (message.trim().length > 0) {
             const user = await UserService.findOneBy({ _id: socket.userId });
-            const message = await MessageService.create(
+            const res = await MessageService.create(
                 { message, channelId },
                 socket.userId
             );
             io.to(channelId).emit('newMessage', {
-                message,
+                message: res.message,
                 name: user.name,
                 userId: socket.userId,
             });
@@ -159,6 +159,7 @@ io.on('connection', socket => {
     });
 });
 
+module.exports = app;
 module.exports.close = function () {
     server.close();
 };

@@ -28,16 +28,17 @@ router.post(
 );
 
 router.get(
-    '/:channelId',
+    '/:channelId/singleChannel',
     getUser,
     validateChannelId,
     async function (req, res) {
         try {
             const channelId = req.params?.channelId;
 
-            const channel = await ChannelService.findOneBy({
+            const channel = await ChannelService.getChannelById({
                 _id: mongoose.Types.ObjectId(channelId),
             });
+
             return sendItemResponse(req, res, channel);
         } catch (error) {
             return sendErrorResponse(req, res, error);
@@ -49,6 +50,29 @@ router.get('/', getUser, async function (req, res) {
     try {
         const { limit, skip } = req.query;
         const channel = await ChannelService.findBy({}, skip, limit);
+        return sendItemResponse(req, res, channel);
+    } catch (error) {
+        return sendErrorResponse(req, res, error);
+    }
+});
+
+router.get('/search', getUser, async function (req, res) {
+    try {
+        const { limit, skip, search } = req.query;
+        const channel = await ChannelService.findBy(
+            {
+                $or: [
+                    {
+                        name: {
+                            $regex: new RegExp(search),
+                            $options: 'i',
+                        },
+                    },
+                ],
+            },
+            skip,
+            limit
+        );
         return sendItemResponse(req, res, channel);
     } catch (error) {
         return sendErrorResponse(req, res, error);

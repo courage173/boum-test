@@ -36,4 +36,15 @@ router.get('/:channelId', getUser, async function (req, res) {
     }
 });
 
+router.get('/', getUser, async function (req, res) {
+    try {
+        const message = await MessageService.findBy({
+            'users.userId': req.user.id,
+        });
+        return sendItemResponse(req, res, message);
+    } catch (error) {
+        return sendErrorResponse(req, res, error);
+    }
+});
+
 module.exports = router;
