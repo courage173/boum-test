@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": "v12.16.2"
+  },
   "scripts": {
     "eslint": "./node_modules/.bin/eslint ",
     "lint": "eslint '**/*.js' -c .eslintrc.json --ignore-path .eslintignore --fix",
