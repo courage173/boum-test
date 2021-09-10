@@ -1,4 +1,4 @@
-# codebyte-test
+# Boum-test
 
 [![Build Status](https://app.travis-ci.com/courage173/boum-test.svg?token=ng6EuR3qCNLsaZVKjxk9&branch=main)](https://app.travis-ci.com/courage173/boum-test)
 
