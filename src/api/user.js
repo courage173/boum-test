@@ -30,7 +30,7 @@ router.post('/signin', validateLoginFields, async function (req, res) {
     }
 });
 
-router.post('/user', getUser, async function (req, res) {
+router.get('/profile', getUser, async function (req, res) {
     try {
         const user = await UserService.findOneBy({ _id: req.user.id });
         return sendItemResponse(req, res, user);
