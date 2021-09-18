@@ -13,7 +13,6 @@ let user1Token, user2Token, channelId, userId2, userId1;
 
 describe('my awesome project', () => {
     let clientSocket;
-    //const io = global.io;
     before(function (done) {
         this.timeout(20000);
         UserService.registerUser({

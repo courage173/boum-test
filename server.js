@@ -108,7 +108,6 @@ const jwt = require('jsonwebtoken');
 io.use(async (socket, next) => {
     try {
         const token = socket.handshake.query.token;
-
         const payload = await jwt.verify(token, jwtSecretKey);
         socket.userId = payload.id;
         next();
@@ -121,7 +120,13 @@ io.use(async (socket, next) => {
 global.io = io;
 
 io.on('connection', socket => {
-    //for a new user joining the room
+    socket.on('joinRoom', async ({ channelId }) => {
+        socket.join(channelId);
+    });
+    socket.on('end', function () {
+        socket.disconnect(0);
+    });
+
     socket.on('joinChannel', async ({ channelId }) => {
         const user = await UserService.findOneBy({ _id: socket.userId });
         await ChannelService.joinChannel(socket.userId, channelId);
@@ -132,6 +137,7 @@ io.on('connection', socket => {
             name: user.name,
             username: user.username,
             text: `Welcome ${user.username}`,
+            channelId,
         });
 
         //displays a joined room message to all other room users except that particular user
@@ -139,6 +145,7 @@ io.on('connection', socket => {
             userId: user._id,
             name: user.name,
             username: user.username,
+            channelId,
             text: `${user.username} has joined the chat`,
         });
     });
@@ -150,10 +157,12 @@ io.on('connection', socket => {
                 { message, channelId },
                 socket.userId
             );
+
             io.to(channelId).emit('newMessage', {
                 message: res.message,
                 name: user.name,
                 userId: socket.userId,
+                createdAt: res.createdAt,
             });
         }
     });

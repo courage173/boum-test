@@ -41,7 +41,7 @@ module.exports = {
             if (!query.deleted) query.deleted = false;
 
             const messages = await MessageModel.find(query)
-                .sort([['createdAt', -1]])
+                .sort([['createdAt', 1]])
                 .limit(limit)
                 .skip(skip);
             const count = await _this.count(query);
