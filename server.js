@@ -129,7 +129,10 @@ io.on('connection', socket => {
 
     socket.on('joinChannel', async ({ channelId }) => {
         const user = await UserService.findOneBy({ _id: socket.userId });
-        await ChannelService.joinChannel(socket.userId, channelId);
+        const channel = await ChannelService.joinChannel(
+            socket.userId,
+            channelId
+        );
         socket.join(channelId);
 
         socket.emit('welcome_notification', {
@@ -138,6 +141,7 @@ io.on('connection', socket => {
             username: user.username,
             text: `Welcome ${user.username}`,
             channelId,
+            channel,
         });
 
         //displays a joined room message to all other room users except that particular user
